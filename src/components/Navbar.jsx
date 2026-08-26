@@ -4,7 +4,7 @@ const Navbar = () => {
   return (
     <header className="h-20 px-8 flex items-center justify-between
       bg-white/[0.02]
-      backdrop-blur-xl
+      backdrop-blur-sm
       border-b border-white/10">
 
       <div className="flex items-center gap-3
