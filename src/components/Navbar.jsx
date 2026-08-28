@@ -7,22 +7,19 @@ const Navbar = () => {
       backdrop-blur-sm
       border-b border-white/10">
 
-      <div className="flex items-center gap-3
-        w-80 px-4 py-2.5
-        rounded-xl
-        bg-white/[0.04]
-        border border-white/10">
-
-        <Search size={18} className="text-slate-500" />
-
-        <input
-          type="text"
-          placeholder="Search anything..."
-          className="bg-transparent outline-none text-sm text-white
-          placeholder:text-slate-600 w-full"
-        />
-      </div>
-
+     <p
+  className="
+    text-2xl font-bold tracking-tight
+    bg-gradient-to-r
+    from-violet-300
+    via-purple-400
+    to-fuchsia-400
+    bg-clip-text text-transparent
+    drop-shadow-[0_0_12px_rgba(139,92,246,0.25)]
+  "
+>
+  Plan less. Build more.
+</p>
       <div className="flex items-center gap-5">
 
         <Bell

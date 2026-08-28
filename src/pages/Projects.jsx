@@ -7,6 +7,8 @@ import ProjectCard from "../components/ProjectCard";
 const Projects = () => {
   const [showModal, setShowModal] = useState(false);
 
+  const [search, setSearch] = useState("");
+  const [status, setstatus] = useState("all");
   const [projects, setProjects] = useState([
     {
       id: 1,
@@ -14,6 +16,7 @@ const Projects = () => {
       description: "Developer productivity platform",
       progress: 80,
       tasks: 12,
+      status: "In Progress",
     },
     {
       id: 2,
@@ -21,6 +24,7 @@ const Projects = () => {
       description: "Personal developer portfolio",
       progress: 60,
       tasks: 18,
+      status: "Completed",
     },
     {
       id: 3,
@@ -28,27 +32,31 @@ const Projects = () => {
       description: "Modern shopping platform",
       progress: 35,
       tasks: 24,
+      status: "Not Started",
     },
     {
-      id: 1,
+      id: 4,
       title: "DevFlow",
       description: "Developer productivity platform",
       progress: 80,
       tasks: 12,
+      status: "On Hold",
     },
     {
-      id: 2,
+      id: 5,
       title: "Portfolio",
       description: "Personal developer portfolio",
       progress: 60,
       tasks: 18,
+      status: "In Progress",
     },
     {
-      id: 3,
+      id: 6,
       title: "E-Commerce",
       description: "Modern shopping platform",
       progress: 35,
       tasks: 24,
+      status: "Completed",
     },
   ]);
 
@@ -91,6 +99,15 @@ const Projects = () => {
     setShowModal(false);
   };
 
+  const searchResult = projects.filter((project) => {
+    return project.title.toLowerCase().includes(search.toLowerCase());
+  });
+
+  const statusResult = searchResult.filter((project) => {
+    if(status =='all') return true ;
+    return project.status === status;
+  });
+
   return (
     <div className="h-screen bg-slate-950 text-white flex overflow-hidden">
       <Sidebar />
@@ -109,6 +126,60 @@ const Projects = () => {
               </p>
             </div>
 
+            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+              {/* Search */}
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search your projects..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="
+                  w-full
+                  h-12
+                  pl-4 pr-4
+                  rounded-2xl
+                  bg-white/5
+                  border border-white/10
+                  text-white
+                  placeholder:text-slate-500
+                  outline-none
+                  transition-all
+                  focus:border-violet-400/50
+                  focus:bg-white/[0.07]
+                  focus:ring-2
+                  focus:ring-violet-500/10
+                "
+                />
+              </div>
+
+              {/* Status Filter */}
+              <select onChange={(e)=>{
+                setstatus(e.target.value);
+              }}
+                className="
+                h-12
+                px-4
+                rounded-2xl
+                bg-slate-900
+                border border-white/10
+                text-slate-300
+                outline-none
+                cursor-pointer
+                transition-all
+                hover:border-violet-400/30
+                focus:border-violet-400/50
+                focus:ring-2
+                focus:ring-violet-500/10
+              "
+              >
+                <option value="all">All Projects</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
             <button
               onClick={() => setShowModal(true)}
               className="
@@ -119,6 +190,8 @@ const Projects = () => {
                 transition
                 font-medium
                 shadow-lg shadow-violet-500/20
+                cursor-pointer
+
               "
             >
               + New Project
@@ -127,18 +200,47 @@ const Projects = () => {
 
           {/* Projects */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                id={project.id}
-                title={project.title}
-                description={project.description}
-                progress={project.progress}
-                tasks={project.tasks}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
+
+            {statusResult.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center py-20">
+                <div
+                  className="
+                  flex h-16 w-16 items-center justify-center
+                  rounded-2xl
+                  bg-violet-500/10
+                  border border-violet-400/20
+                  text-violet-400
+                  text-2xl
+                  shadow-lg shadow-violet-500/10
+                  mb-5
+                "
+                >
+                  🔍
+                </div>
+
+                <h3 className="text-xl font-semibold text-white">
+                  No Project Found
+                </h3>
+
+                <p className="mt-2 text-sm text-slate-500">
+                  Try searching with a different project name.
+                </p>
+              </div>
+            ) : (
+              statusResult.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  id={project.id}
+                  title={project.title}
+                  description={project.description}
+                  progress={project.progress}
+                  tasks={project.tasks}
+                  status={project.status}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              ))
+            )}
           </div>
         </main>
       </div>
@@ -226,6 +328,8 @@ const Projects = () => {
                   border border-white/10
                   hover:bg-white/10
                   transition
+                  cursor-pointer
+
                 "
               >
                 Cancel
@@ -239,6 +343,8 @@ const Projects = () => {
                   bg-violet-600
                   hover:bg-violet-500
                   transition
+                  cursor-pointer
+
                 "
               >
                 Create Project

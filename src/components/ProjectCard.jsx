@@ -1,5 +1,8 @@
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, X } from "lucide-react";
+
 import { useState } from "react";
+
+import { createPortal } from "react-dom";
 
 const ProjectCard = ({
   id,
@@ -7,11 +10,14 @@ const ProjectCard = ({
   description,
   progress,
   tasks,
+  status,
   onEdit,
   onDelete,
 }) => {
   const [editModel, setEditModel] = useState(false);
   const [editMenu, setEditMenu] = useState(false);
+
+  const [deleteModel, setDeleteModel] = useState(false);
 
   const [editedProjectName, setEditedProjectName] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
@@ -54,21 +60,41 @@ const ProjectCard = ({
 
         <button
           onClick={() => {
-            setEditModel(true);
+            if (editModel) {
+              setEditModel(false);
+            } else {
+              setEditModel(true);
+            }
           }}
           className="cursor-pointer"
         >
-          <EllipsisVertical size={16} />
+          {editModel ? <X /> : <EllipsisVertical />}
         </button>
       </div>
 
       {/* Description */}
-      
 
       <p className="mt-2 text-sm text-slate-400 break-words line-clamp-2">
-  {description}
-</p>
-    
+        {description}
+      </p>
+
+      {/* Status */}
+      <div className="mt-4">
+        <span
+          className="
+          inline-flex items-center
+          px-3 py-1
+          rounded-full
+          text-xs font-medium
+          bg-violet-500/10
+          text-violet-300
+          border border-violet-400/20
+          backdrop-blur-sm
+        "
+        >
+          {status}
+        </span>
+      </div>
 
       {/* Progress */}
 
@@ -132,7 +158,7 @@ const ProjectCard = ({
 
           <button
             onClick={() => {
-              onDelete(id);
+              setDeleteModel(true);
             }}
             className="cursor-pointer border-2 px-3 py-1  rounded-3xl p-6
         bg-gradient-to-br
@@ -155,145 +181,228 @@ const ProjectCard = ({
 
       {/* Edit Modal */}
 
-      {editMenu && (
-        <div className="fixed inset-0 z-50">
-          {/* Backdrop */}
-
-          <div
-            onClick={() => setEditMenu(false)}
-            className="
-              absolute inset-0
-              bg-black/60
-              backdrop-blur-sm
-            "
-          />
-
-          {/* Modal */}
-
-          <div
-            className="
-              relative
-              flex min-h-screen
-              items-center
-              justify-center
-              p-4
-            "
-          >
-            <form
-              onSubmit={handleEditSubmit}
-              onClick={(e) => e.stopPropagation()}
+      {editMenu &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999]">
+            {/* Backdrop */}
+            <div
+              onClick={() => setEditMenu(false)}
               className="
-                w-full max-w-md
-                rounded-3xl
-                p-6
+          absolute inset-0
+          bg-black/60
+          backdrop-blur-sm
+        "
+            />
 
-                bg-gradient-to-br
-                from-white/10
-                via-slate-900/90
-                to-violet-900/70
-
-                backdrop-blur-xl
-
-                border border-white/10
-                shadow-2xl
-              "
+            {/* Modal */}
+            <div
+              className="
+          relative
+          flex min-h-screen
+          items-center
+          justify-center
+          p-4
+        "
             >
-              {/* Heading */}
+              <form
+                onSubmit={handleEditSubmit}
+                onClick={(e) => e.stopPropagation()}
+                className="
+            w-full max-w-md
+            rounded-3xl
+            p-6
+            bg-gradient-to-br
+            from-white/10
+            via-slate-900/90
+            to-violet-900/70
+            backdrop-blur-xl
+            border border-white/10
+            shadow-2xl
+          "
+              >
+                <h2 className="text-2xl font-bold mb-6 text-white">
+                  Edit Project
+                </h2>
 
-              <h2 className="text-2xl font-bold mb-6 text-white">
-                Edit Project
-              </h2>
+                {/* Project Name */}
+                <div className="mb-5">
+                  <label className="block text-sm text-slate-300 mb-2">
+                    Project Name
+                  </label>
 
-              {/* Project Name */}
+                  <input
+                    type="text"
+                    value={editedProjectName}
+                    onChange={(e) => setEditedProjectName(e.target.value)}
+                    placeholder="Enter project name"
+                    required
+                    className="
+                w-full
+                px-4 py-3
+                rounded-xl
+                bg-white/5
+                border border-white/10
+                outline-none
+                focus:border-violet-400
+                transition
+                text-white
+              "
+                  />
+                </div>
 
-              <div className="mb-5">
-                <label className="block text-sm text-slate-300 mb-2">
-                  Project Name
-                </label>
+                {/* Description */}
+                <div className="mb-6">
+                  <label className="block text-sm text-slate-300 mb-2">
+                    Description
+                  </label>
 
-                <input
-                  type="text"
-                  value={editedProjectName}
-                  onChange={(e) => setEditedProjectName(e.target.value)}
-                  placeholder="Enter project name"
-                  required
-                  className="
-                    w-full
-                    px-4 py-3
-                    rounded-xl
-                    bg-white/5
-                    border border-white/10
-                    outline-none
-                    focus:border-violet-400
-                    transition
-                    text-white
-                  "
-                />
+                  <textarea
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    placeholder="Describe your project"
+                    rows="4"
+                    required
+                    className="
+                w-full
+                px-4 py-3
+                rounded-xl
+                bg-white/5
+                border border-white/10
+                outline-none
+                focus:border-violet-400
+                transition
+                resize-none
+                text-white
+              "
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setEditMenu(false)}
+                    className="
+                px-4 py-2
+                rounded-xl
+                bg-white/5
+                border border-white/10
+                hover:bg-white/10
+                transition
+                cursor-pointer
+              "
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="
+                px-5 py-2
+                rounded-xl
+                bg-violet-600
+                hover:bg-violet-500
+                transition
+                cursor-pointer
+              "
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+
+          document.body,
+        )}
+
+      {deleteModel &&
+        createPortal(
+          <div className="fixed inset-0 z-[9999]">
+            {/* Backdrop */}
+            <div
+              onClick={() => setDeleteModel(false)}
+              className="
+        absolute inset-0
+        bg-black/60
+        backdrop-blur-sm
+      "
+            />
+
+            {/* Modal container */}
+            <div
+              className="
+      relative
+      flex min-h-screen
+      items-center justify-center
+      p-4
+    "
+            >
+              {/* Disclaimer */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="
+          w-full max-w-sm
+          rounded-3xl
+          p-6
+          bg-gradient-to-br
+          from-white/10
+          via-slate-900/90
+          to-violet-900/70
+          backdrop-blur-xl
+          border border-white/10
+          shadow-2xl
+        "
+              >
+                <h2 className="text-xl font-bold text-white mb-3">
+                  Delete Project?
+                </h2>
+
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  Are you sure you want to delete this project? This action
+                  cannot be undone.
+                </p>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    onClick={() => {
+                      setDeleteModel(false);
+                      setEditModel(false);
+                    }}
+                    className="
+              px-4 py-2
+              rounded-xl
+              bg-white/5
+              border border-white/10
+              hover:bg-white/10
+              transition
+            "
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onDelete(id);
+                      setDeleteModel(false);
+                    }}
+                    className="
+              px-5 py-2
+              rounded-xl
+              bg-red-600/80
+              hover:bg-red-600
+              transition
+              font-medium
+            "
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-
-              {/* Description */}
-
-              <div className="mb-6">
-                <label className="block text-sm text-slate-300 mb-2">
-                  Description
-                </label>
-
-                <textarea
-                  value={editedDescription}
-                  onChange={(e) => setEditedDescription(e.target.value)}
-                  placeholder="Describe your project"
-                  rows="4"
-                  required
-                  className="
-                    w-full
-                    px-4 py-3
-                    rounded-xl
-                    bg-white/5
-                    border border-white/10
-                    outline-none
-                    focus:border-violet-400
-                    transition
-                    resize-none
-                    text-white
-                  "
-                />
-              </div>
-
-              {/* Buttons */}
-
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setEditMenu(false)}
-                  className="
-                    px-4 py-2
-                    rounded-xl
-                    bg-white/5
-                    border border-white/10
-                    hover:bg-white/10
-                    transition
-                  "
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="
-                    px-5 py-2
-                    rounded-xl
-                    bg-violet-600
-                    hover:bg-violet-500
-                    transition
-                  "
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };
