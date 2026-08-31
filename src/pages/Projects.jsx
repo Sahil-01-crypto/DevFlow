@@ -4,61 +4,12 @@ import Sidebar from "../components/Slidebar";
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
 
-const Projects = () => {
+const Projects = ({projects ,setProjects}) => {
   const [showModal, setShowModal] = useState(false);
 
   const [search, setSearch] = useState("");
   const [status, setstatus] = useState("all");
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "DevFlow",
-      description: "Developer productivity platform",
-      progress: 80,
-      tasks: 12,
-      status: "In Progress",
-    },
-    {
-      id: 2,
-      title: "Portfolio",
-      description: "Personal developer portfolio",
-      progress: 60,
-      tasks: 18,
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "E-Commerce",
-      description: "Modern shopping platform",
-      progress: 35,
-      tasks: 24,
-      status: "Not Started",
-    },
-    {
-      id: 4,
-      title: "DevFlow",
-      description: "Developer productivity platform",
-      progress: 80,
-      tasks: 12,
-      status: "On Hold",
-    },
-    {
-      id: 5,
-      title: "Portfolio",
-      description: "Personal developer portfolio",
-      progress: 60,
-      tasks: 18,
-      status: "In Progress",
-    },
-    {
-      id: 6,
-      title: "E-Commerce",
-      description: "Modern shopping platform",
-      progress: 35,
-      tasks: 24,
-      status: "Completed",
-    },
-  ]);
+   
 
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");

@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { createPortal } from "react-dom";
 
+import { useNavigate } from "react-router-dom";
+
 const ProjectCard = ({
   id,
   title,
@@ -14,6 +16,8 @@ const ProjectCard = ({
   onEdit,
   onDelete,
 }) => {
+
+  const   navigate = useNavigate();
   const [editModel, setEditModel] = useState(false);
   const [editMenu, setEditMenu] = useState(false);
 
@@ -35,10 +39,13 @@ const ProjectCard = ({
   };
 
   return (
-    <div
+    <div onClick={()=>{
+      navigate(`/projects/${id}`)
+    }}
       className="
         relative
         rounded-3xl p-6
+        cursor-pointer
         bg-gradient-to-br
         from-white/5
         via-slate-900/40
@@ -59,7 +66,8 @@ const ProjectCard = ({
         <h2 className="text-xl font-bold text-white">{title}</h2>
 
         <button
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             if (editModel) {
               setEditModel(false);
             } else {
@@ -128,7 +136,8 @@ const ProjectCard = ({
       {editModel && (
         <div className="absolute right-4 top-14 z-10 flex gap-2 rounded-xl bg-slate-900/95 p-2 shadow-xl">
           <button
-            onClick={() => {
+            onClick={(e) => {
+                e.stopPropagation();
               // Put existing data inside inputs
               setEditedProjectName(title);
               setEditedDescription(description);
@@ -157,7 +166,8 @@ const ProjectCard = ({
           </button>
 
           <button
-            onClick={() => {
+            onClick={(e) => {
+                  e.stopPropagation();
               setDeleteModel(true);
             }}
             className="cursor-pointer border-2 px-3 py-1  rounded-3xl p-6
@@ -382,7 +392,8 @@ const ProjectCard = ({
                   </button>
 
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                       e.stopPropagation();
                       onDelete(id);
                       setDeleteModel(false);
                     }}
