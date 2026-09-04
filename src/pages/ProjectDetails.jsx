@@ -105,42 +105,64 @@ const ProjectDetails = ({ projects }) => {
   const [editedTaskPriority, setEditedTaskPriority] = useState("Medium");
   const [editedTaskDueDate, setEditedTaskDueDate] = useState("");
   const [editingTaskId, setEditingTaskId] = useState(null);
+  const [deleteTaskId, setDeleteTaskId] = useState(null)
+  // /delete task model state
+  const [deleteTaskModal, setDeleteTaskModal] = useState(false);
+  
 
-const handleTaskEdit = (taskId) => {
-  const task = projectTasks.find((task) => task.id === taskId);
+  const handleTaskEdit = (taskId) => {
+    const task = projectTasks.find((task) => {
+      return task.id === taskId;
+    });
 
-  if (!task) return;
+    if (!task) return;
 
-  setEditingTaskId(taskId);
-  setEditedTaskTitle(task.title);
-  setEditedTaskDescription(task.description);
-  setEditedTaskStatus(task.status);
-  setEditedTaskPriority(task.priority);
-  setEditedTaskDueDate(task.dueDate);
+    setEditingTaskId(taskId);
+    setEditedTaskTitle(task.title);
+    setEditedTaskDescription(task.description);
+    setEditedTaskStatus(task.status);
+    setEditedTaskPriority(task.priority);
+    setEditedTaskDueDate(task.dueDate);
 
-  settaskEditModal(true);
-};
-const handleEditTask = (e) => {
-  e.preventDefault();
+    settaskEditModal(true);
+  };
+  const eupdateEditedTask = (e) => {
+    e.preventDefault();
 
-  setProjectTasks((prevTasks) =>
-    prevTasks.map((task) =>
-      task.id === editingTaskId
-        ? {
-            ...task,
-            title: editedTaskTitle,
-            description: editedTaskDescription,
-            status: editedTaskStatus,
-            priority: editedTaskPriority,
-            dueDate: editedTaskDueDate,
-          }
-        : task
-    )
-  );
+    setProjectTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === editingTaskId
+          ? {
+              ...task,
+              title: editedTaskTitle,
+              description: editedTaskDescription,
+              status: editedTaskStatus,
+              priority: editedTaskPriority,
+              dueDate: editedTaskDueDate,
+            }
+          : task,
+      ),
+    );
 
-  settaskEditModal(false);
-  setEditingTaskId(null);
-};
+    settaskEditModal(false);
+    setEditingTaskId(null);
+  };
+
+  const handleDeleteTask = (taskId) => {
+    setDeleteTaskModal(true);
+    setDeleteTaskId(taskId)
+  };
+
+  // this function will run the submission of the command from the delete task modal 
+const finalDeleteTask =()=>{
+  setProjectTasks(projectTasks.filter((task)=> task.id !=  deleteTaskId ))
+
+  setDeleteTaskId(null);
+}
+                      
+  
+
+
   return (
     <div>
       return (
@@ -304,10 +326,11 @@ const handleEditTask = (e) => {
                     setShowAddTaskModel(true);
                   }}
                   className="
+                  
                 px-4 py-2
                 rounded-xl
                 bg-violet-600
-                hover:bg-violet-500
+                hover:bg-violet-900
                 transition
                 font-medium
                 cursor-pointer
@@ -363,6 +386,7 @@ const handleEditTask = (e) => {
                       priority={obj.priority}
                       dueDate={obj.dueDate}
                       onEdit={handleTaskEdit}
+                      onDelete={handleDeleteTask}
                     />
                   ))}
                 </>
@@ -372,278 +396,636 @@ const handleEditTask = (e) => {
         </div>
       </div>
       <div>
-        {showAddTaskModel && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-            <form
-              onSubmit={handleCreateTask}
-              className="w-full max-w-lg rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl"
+       {showAddTaskModel && (
+  <div
+    className="
+      fixed inset-0 z-50
+      flex items-center justify-center
+      bg-black/70
+      px-4
+      backdrop-blur-md
+    "
+  >
+    <div
+      className="
+        w-full max-w-lg
+        rounded-2xl
+        border border-violet-400/20
+        bg-slate-950/80
+        p-6
+        shadow-[0_0_60px_rgba(139,92,246,0.15)]
+        backdrop-blur-2xl
+      "
+    >
+      {/* Header */}
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight text-white">
+            Create New Task
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-400">
+            Add a task to this project
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAddTaskModel(false)}
+          className="
+            flex h-9 w-9
+            items-center justify-center
+            rounded-xl
+            border border-white/10
+            bg-white/5
+            text-slate-400
+            transition-all duration-200
+            hover:border-violet-400/30
+            hover:bg-violet-500/10
+            hover:text-white
+            hover:shadow-[0_0_15px_rgba(139,92,246,0.2)]
+          "
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleCreateTask} className="space-y-5">
+
+        {/* Task Title */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Task Title
+          </label>
+
+          <input
+          required
+            type="text"
+            value={taskTitle}
+            onChange={(e) => setTaskTitle(e.target.value)}
+            placeholder="e.g. Build authentication"
+            className="
+              w-full
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              placeholder:text-slate-500
+              transition-all duration-200
+              focus:border-violet-400/40
+              focus:bg-white/[0.08]
+              focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+            "
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Description
+          </label>
+
+          <textarea
+          required
+            rows="3"
+            value={taskDescription}
+            onChange={(e) => setTaskDescription(e.target.value)}
+            placeholder="Describe what needs to be done..."
+            className="
+              w-full
+              resize-none
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              placeholder:text-slate-500
+              transition-all duration-200
+              focus:border-violet-400/40
+              focus:bg-white/[0.08]
+              focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+            "
+          />
+        </div>
+
+        {/* Status + Priority */}
+        <div className="grid grid-cols-2 gap-4">
+
+          {/* Status */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Status
+            </label>
+
+            <select
+            required
+              value={editedTaskStatus}
+              onChange={(e) => setEditedTaskStatus(e.target.value)}
+              className="
+                w-full
+                rounded-xl
+                border border-white/10
+                bg-white/5
+                px-4 py-3
+                text-sm text-white
+                outline-none
+                transition-all duration-200
+                focus:border-violet-400/40
+                focus:bg-white/[0.08]
+                focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+              "
             >
-              {/* Header */}
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">
-                    Create New Task
-                  </h2>
+              <option value="Not Started" className="bg-slate-900">
+                Not Started
+              </option>
 
-                  <p className="mt-1 text-sm text-slate-400">
-                    Add a task to this project
-                  </p>
-                </div>
+              <option value="In Progress" className="bg-slate-900">
+                In Progress
+              </option>
 
-                <button
-                  type="button"
-                  onClick={() => setShowAddTaskModal(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Title */}
-              <div className="mb-4">
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Task Title
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="e.g. Build authentication"
-                  value={taskTitle}
-                  onChange={(e) => setTaskTitle(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
-                  required
-                />
-              </div>
-
-              {/* Description */}
-              <div className="mb-4">
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Description
-                </label>
-
-                <textarea
-                  placeholder="Describe what needs to be done..."
-                  value={taskDescription}
-                  onChange={(e) => setTaskDescription(e.target.value)}
-                  rows="3"
-                  className="w-full resize-none rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
-                  required
-                />
-              </div>
-
-              {/* Status + Priority */}
-              <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* Status */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-300">
-                    Status
-                  </label>
-
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-violet-400/50"
-                  >
-                    <option value="Not Started">Not Started</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
-
-                {/* Priority */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-300">
-                    Priority
-                  </label>
-
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-violet-400/50"
-                  >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Due Date */}
-              <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium text-slate-300">
-                  Due Date
-                </label>
-
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none focus:border-violet-400/50"
-                />
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddTaskModel(false)}
-                  className="rounded-xl border border-white/10 px-5 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-violet-500"
-                >
-                  Create Task
-                </button>
-              </div>
-            </form>
+              <option value="Completed" className="bg-slate-900">
+                Completed
+              </option>
+            </select>
           </div>
-        )}
+
+          {/* Priority */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Priority
+            </label>
+
+            <select
+            required
+              value={editedTaskPriority}
+              onChange={(e) => setEditedTaskPriority(e.target.value)}
+              className="
+                w-full
+                rounded-xl
+                border border-white/10
+                bg-white/5
+                px-4 py-3
+                text-sm text-white
+                outline-none
+                transition-all duration-200
+                focus:border-violet-400/40
+                focus:bg-white/[0.08]
+                focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+              "
+            >
+              <option value="Low" className="bg-slate-900">
+                Low
+              </option>
+
+              <option value="Medium" className="bg-slate-900">
+                Medium
+              </option>
+
+              <option value="High" className="bg-slate-900">
+                High
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        {/* Due Date */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Due Date
+          </label>
+
+          <input
+          required
+            type="date"
+            value={editedTaskDueDate}
+            onChange={(e) => setEditedTaskDueDate(e.target.value)}
+            className="
+              w-full
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              transition-all duration-200
+              focus:border-violet-400/40
+              focus:bg-white/[0.08]
+              focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+            "
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-3 border-t border-white/10 pt-5">
+
+          <button
+            type="button"
+ 
+            onClick={() => setShowAddTaskModel(false) }
+            className="
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-5 py-2.5
+              text-sm font-medium
+              text-slate-300
+              transition-all duration-200
+              hover:border-white/20
+              hover:bg-white/10
+              hover:text-white
+            "
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="
+              rounded-xl
+              border border-violet-400/30
+              bg-violet-600
+              px-5 py-2.5
+              text-sm font-semibold
+              text-white
+              shadow-[0_0_20px_rgba(139,92,246,0.25)]
+              transition-all duration-200
+              hover:bg-violet-500
+              hover:border-violet-300/50
+              hover:shadow-[0_0_30px_rgba(139,92,246,0.4)]
+              active:scale-95
+            "
+          >
+            Create Task
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
       </div>
       );
-
-
-
-
-
-
-
       {/* adding edit modal */}
-
-
-
-
-
-
       {taskEditModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#151515] p-6 shadow-2xl">
-            {/* Header */}
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-white">Edit Task</h2>
+  <div
+    className="
+      fixed inset-0 z-50
+      flex items-center justify-center
+      bg-black/70
+      px-4
+      backdrop-blur-md
+    "
+  >
+    <div
+      className="
+        w-full max-w-lg
+        rounded-2xl
+        border border-violet-400/20
+        bg-slate-950/80
+        p-6
+        shadow-[0_0_60px_rgba(139,92,246,0.15)]
+        backdrop-blur-2xl
+      "
+    >
+      {/* Header */}
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight text-white">
+            Edit Task
+          </h2>
 
-                <p className="mt-1 text-sm text-gray-400">
-                  Update your task details
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setTaskEditModal(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-white/10 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleEditTask} className="space-y-5">
-              {/* Task Title */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-300">
-                  Task Title
-                </label>
-
-                <input
-                  type="text"
-                  value={editedTaskTitle}
-                  onChange={(e) => setEditedTaskTitle(e.target.value)}
-                  placeholder="Enter task title"
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500 transition focus:border-indigo-500 focus:bg-white/10"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-300">
-                  Description
-                </label>
-
-                <textarea
-                  rows="3"
-                  value={editedTaskDescription}
-                  onChange={(e) => setEditedTaskDescription(e.target.value)}
-                  placeholder="Describe your task"
-                  className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500 transition focus:border-indigo-500 focus:bg-white/10"
-                />
-              </div>
-
-              {/* Status + Priority */}
-              <div className="grid grid-cols-2 gap-4">
-                {/* Status */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-300">
-                    Status
-                  </label>
-
-                  <select
-                    value={editedTaskStatus}
-                    onChange={(e) => setEditedTaskStatus(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                  >
-                    <option value="Not Started">Not Started</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
-
-                {/* Priority */}
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-300">
-                    Priority
-                  </label>
-
-                  <select
-                    value={editedTaskPriority}
-                    onChange={(e) => setEditedTaskPriority(e.target.value)}
-                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                  >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Due Date */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-300">
-                  Due Date
-                </label>
-
-                <input
-                  type="date"
-                  value={editedTaskDueDate}
-                  onChange={(e) => setEditedTaskDueDate(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition focus:border-indigo-500"
-                />
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => settaskEditModal(false)}
-                  className="rounded-xl border border-white/10 px-5 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-500 active:scale-95"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
+          <p className="mt-1 text-sm text-slate-400">
+            Update your task details
+          </p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAddTaskModel(false)}
+          className="
+            flex h-9 w-9
+            items-center justify-center
+            rounded-xl
+            border border-white/10
+            bg-white/5
+            text-slate-400
+            transition-all duration-200
+            hover:border-violet-400/30
+            hover:bg-violet-500/10
+            hover:text-white
+            hover:shadow-[0_0_15px_rgba(139,92,246,0.2)]
+          "
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={eupdateEditedTask} className="space-y-5">
+
+        {/* Task Title */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Task Title
+          </label>
+
+          <input
+            type="text"
+            value={editedTaskTitle}
+            onChange={(e) => setEditedTaskTitle(e.target.value)}
+            placeholder="Enter task title"
+            className="
+              w-full
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              placeholder:text-slate-500
+              transition-all duration-200
+              focus:border-violet-400/40
+              focus:bg-white/[0.08]
+              focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+            "
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Description
+          </label>
+
+          <textarea
+            rows="3"
+            value={editedTaskDescription}
+            onChange={(e) => setEditedTaskDescription(e.target.value)}
+            placeholder="Describe your task"
+            className="
+              w-full
+              resize-none
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              placeholder:text-slate-500
+              transition-all duration-200
+              focus:border-violet-400/40
+              focus:bg-white/[0.08]
+              focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+            "
+          />
+        </div>
+
+        {/* Status + Priority */}
+        <div className="grid grid-cols-2 gap-4">
+
+          {/* Status */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Status
+            </label>
+
+            <select
+              value={editedTaskStatus}
+              onChange={(e) => setEditedTaskStatus(e.target.value)}
+              className="
+                w-full
+                rounded-xl
+                border border-white/10
+                bg-white/5
+                px-4 py-3
+                text-sm text-white
+                outline-none
+                transition-all duration-200
+                focus:border-violet-400/40
+                focus:bg-white/[0.08]
+                focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+              "
+            >
+              <option value="Not Started" className="bg-slate-900">
+                Not Started
+              </option>
+
+              <option value="In Progress" className="bg-slate-900">
+                In Progress
+              </option>
+
+              <option value="Completed" className="bg-slate-900">
+                Completed
+              </option>
+            </select>
+          </div>
+
+          {/* Priority */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">
+              Priority
+            </label>
+
+            <select
+              value={editedTaskPriority}
+              onChange={(e) => setEditedTaskPriority(e.target.value)}
+              className="
+                w-full
+                rounded-xl
+                border border-white/10
+                bg-white/5
+                px-4 py-3
+                text-sm text-white
+                outline-none
+                transition-all duration-200
+                focus:border-violet-400/40
+                focus:bg-white/[0.08]
+                focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+              "
+            >
+              <option value="Low" className="bg-slate-900">
+                Low
+              </option>
+
+              <option value="Medium" className="bg-slate-900">
+                Medium
+              </option>
+
+              <option value="High" className="bg-slate-900">
+                High
+              </option>
+            </select>
+          </div>
+
+        </div>
+
+        {/* Due Date */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Due Date
+          </label>
+
+          <input
+            type="date"
+            value={editedTaskDueDate}
+            onChange={(e) => setEditedTaskDueDate(e.target.value)}
+            className="
+              w-full
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-4 py-3
+              text-sm text-white
+              outline-none
+              transition-all duration-200
+              focus:border-violet-400/40
+              focus:bg-white/[0.08]
+              focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
+            "
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-3 border-t border-white/10 pt-5">
+
+          <button
+            type="button"
+            onClick={() => settaskEditModal(false)}
+            className="
+              rounded-xl
+              border border-white/10
+              bg-white/5
+              px-5 py-2.5
+              text-sm font-medium
+              text-slate-300
+              transition-all duration-200
+              hover:border-white/20
+              hover:bg-white/10
+              hover:text-white
+            "
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="
+              rounded-xl
+              border border-violet-400/30
+              bg-violet-600
+              px-5 py-2.5
+              text-sm font-semibold
+              text-white
+              shadow-[0_0_20px_rgba(139,92,246,0.25)]
+              transition-all duration-200
+              hover:bg-violet-500
+              hover:border-violet-300/50
+              hover:shadow-[0_0_30px_rgba(139,92,246,0.4)]
+              active:scale-95
+            "
+          >
+            Save Changes
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
+      {deleteTaskModal &&  (
+          <div className="fixed inset-0 z-[9999]">
+            {/* Backdrop */}
+            <div
+              onClick={() => setDeleteModel(false)}
+              className="
+              absolute inset-0
+              bg-black/60
+              backdrop-blur-sm
+            "
+            />
+
+            {/* Modal container */}
+            <div
+              className="
+            relative
+            flex min-h-screen
+            items-center justify-center
+            p-4
+          "
+            >
+              {/* Disclaimer */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="
+                w-full max-w-sm
+                rounded-3xl
+                p-6
+                bg-gradient-to-br
+                from-white/10
+                via-slate-900/90
+                to-violet-900/70
+                backdrop-blur-xl
+                border border-white/10
+                shadow-2xl
+              "
+              >
+                <h2 className="text-xl font-bold text-white mb-3">
+                  Delete Task?
+                </h2>
+
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  Are you sure you want to delete this Task? This action
+                  cannot be undone.
+                </p>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    onClick={() => {
+                      setDeleteTaskModal(false);
+                      
+                    }}
+                    className="
+                    px-4 py-2
+                    rounded-xl
+                    bg-white/5
+                    border border-white/10
+                    hover:bg-white/10
+                    transition
+                  "
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      finalDeleteTask();
+                      setDeleteTaskModal(false);
+                    }}
+                    className="
+                    px-5 py-2
+                    rounded-xl
+                    bg-red-600/80
+                    hover:bg-red-600
+                    transition
+                    font-medium
+                  "
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
       )}
+    
     </div>
   );
 };

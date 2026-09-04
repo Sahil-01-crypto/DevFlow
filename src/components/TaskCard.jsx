@@ -8,7 +8,8 @@ const TaskCard = ({
   status,
   priority,
   dueDate,
-   onEdit,
+  onEdit,
+  onDelete ,
 }) => {
   const [taskEditModal, settaskEditModal] = useState(false);
   return (
@@ -20,16 +21,51 @@ const TaskCard = ({
 
           <p className="mt-1 text-sm leading-6 text-slate-400">{description}</p>
         </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              onEdit(id);
+            }}
+            className="
+      rounded-lg
+      border border-violet-400/30
+      bg-violet-500/10
+      px-3 py-1.5
+      text-sm font-medium text-violet-300
+      shadow-[0_0_12px_rgba(139,92,246,0.15)]
+      transition-all duration-200
+      hover:border-violet-400/60
+      hover:bg-violet-500/20
+      hover:text-violet-200
+      hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]
+      active:scale-95
+    "
+          >
+            Edit
+          </button>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(id);
-          }}
-          className="shrink-0 rounded-lg px-2 py-1 text-slate-400 transition hover:bg-white/10 hover:text-white"
-        >
-          ⋮
-        </button>
+          <button
+            onClick={() => {
+              onDelete(id);
+            }}
+            className="
+      rounded-lg
+      border border-red-400/30
+      bg-red-500/10
+      px-3 py-1.5
+      text-sm font-medium text-red-300
+      shadow-[0_0_12px_rgba(248,113,113,0.12)]
+      transition-all duration-200
+      hover:border-red-400/60
+      hover:bg-red-500/20
+      hover:text-red-200
+      hover:shadow-[0_0_18px_rgba(248,113,113,0.30)]
+      active:scale-95
+    "
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       {/* Status + Priority */}
