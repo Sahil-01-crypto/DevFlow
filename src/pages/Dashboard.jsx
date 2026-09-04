@@ -5,7 +5,7 @@ import RecentActivity from "../components/RecentActivity";
 import ProjectProgress from "../components/ProjectProgress";
 import ProductivityChart from "../components/ProductivityChart";
 
-const Dashboard = ({ projects, projectTasks }) => {
+const Dashboard = ({ projects, projectTasks ,activities  }) => {
   const completedTask = projectTasks.filter((tasks) => {
     return tasks.status === "Completed";
   }).length;
@@ -18,31 +18,14 @@ const Dashboard = ({ projects, projectTasks }) => {
     return task.status === "In Progress";
   }).length;
 
+console.log("PROJECTS:", projects);
+console.log("TASKS:", projectTasks);
+
   const totalTask = projectTasks.length;
 
   const projectProgress = totalTask===0 ?0:Math.round((completedTask / totalTask) * 100);
 
-  const activities = [
-    {
-      title: "You completed Authentication",
-      time: " 2 hours ago",
-    },
 
-    {
-      title: "New project DevFlow created",
-      time: " 5 hours ago",
-    },
-
-    {
-      title: "Task Navbar UI completed",
-      time: " Yesterday",
-    },
-
-    {
-      title: " You joined Frontend Team",
-      time: "  Yesterday",
-    },
-  ];
   return (
     <div className="h-screen bg-slate-950 text-white flexmin-h-screen bg-slate-950 text-white flex overflow-hidden">
       <Sidebar />
@@ -90,9 +73,9 @@ const Dashboard = ({ projects, projectTasks }) => {
               </h2>
 
               <div className="h-56 overflow-y-auto pr-2 custom-scrollbar">
-                {activities.map((data, index) => (
+                {activities.map((data ) => (
                   <RecentActivity
-                    key={index}
+                  
                     task={data.title}
                     time={data.time}
                   />

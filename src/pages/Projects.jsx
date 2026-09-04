@@ -4,12 +4,11 @@ import Sidebar from "../components/Slidebar";
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
 
-const Projects = ({projects ,setProjects}) => {
+const Projects = ({ projects, setProjects }) => {
   const [showModal, setShowModal] = useState(false);
 
   const [search, setSearch] = useState("");
   const [status, setstatus] = useState("all");
-   
 
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
@@ -41,6 +40,7 @@ const Projects = ({projects ,setProjects}) => {
       description: description,
       progress: 0,
       tasks: 0,
+      status: "Not Started",
     };
 
     setProjects([...projects, newProject]);
@@ -55,7 +55,7 @@ const Projects = ({projects ,setProjects}) => {
   });
 
   const statusResult = searchResult.filter((project) => {
-    if(status =='all') return true ;
+    if (status == "all") return true;
     return project.status === status;
   });
 
@@ -105,9 +105,10 @@ const Projects = ({projects ,setProjects}) => {
               </div>
 
               {/* Status Filter */}
-              <select onChange={(e)=>{
-                setstatus(e.target.value);
-              }}
+              <select
+                onChange={(e) => {
+                  setstatus(e.target.value);
+                }}
                 className="
                 h-12
                 px-4
@@ -151,7 +152,6 @@ const Projects = ({projects ,setProjects}) => {
 
           {/* Projects */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-
             {statusResult.length === 0 ? (
               <div className="col-span-full flex flex-col items-center justify-center py-20">
                 <div

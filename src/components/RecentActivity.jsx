@@ -1,4 +1,7 @@
 const RecentActivity = (props) => {
+ console.log(props.task);
+ 
+  
   return (
     <div className="flex items-start gap-3 pb-4 mb-4 border-b border-white/10">
 

@@ -6,7 +6,7 @@ import Projects from "./pages/Projects";
 import Settings from "./pages/Settings";
 import ProjectDetails from "./pages/ProjectDetails";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const App = () => {
   const [projects, setProjects] = useState([
@@ -60,6 +60,8 @@ const App = () => {
     },
   ]);
 
+  const [activities, setActivities] = useState([]);
+
   const [projectTasks, setProjectTasks] = useState(() => {
     const savedTasks = localStorage.getItem("projectTasks");
 
@@ -67,41 +69,28 @@ const App = () => {
       return JSON.parse(savedTasks);
     }
 
-    return [
-      // your initial tasks
-      {
-        id: 1,
-        projectId: 1,
-        title: "Build authentication",
-        description: "Implement login and registration ",
-        status: "In Progress",
-        priority: "High",
-        dueDate: "2026-09-05",
-      },
-      {
-        id: 2,
-        projectId: 1,
-        title: "Create dashboard",
-        description: "Build the main dashboard UI",
-        status: "Completed",
-        priority: "Medium",
-        dueDate: "2026-09-02",
-      },
-      {
-        id: 3,
-        projectId: 2,
-        title: "Design portfolio",
-        description: "Create portfolio layout",
-        status: "Not Started",
-        priority: "Low",
-        dueDate: "2026-09-10",
-      },
-    ];
+    return [];
   });
+  
+
+  
+  useEffect(() => {
+    localStorage.setItem("projectTasks", JSON.stringify(projectTasks));
+  }, [projectTasks]);
+
   return (
     <div className=" w-full h-screen bg-gray-950 scroll-smooth">
       <Routes>
-        <Route path="/" element={<Dashboard projects={projects} projectTasks={projectTasks} />} />
+        <Route
+          path="/"
+          element={
+            <Dashboard
+              projects={projects}
+              projectTasks={projectTasks}
+              activities={activities}
+            />
+          }
+        />
         <Route path="/kanban" element={<Kanban />} />
         <Route
           path="/projects"
@@ -115,6 +104,8 @@ const App = () => {
               projects={projects}
               projectTasks={projectTasks}
               setProjectTasks={setProjectTasks}
+              activities={activities}
+              setActivities={setActivities}
             />
           }
         />
