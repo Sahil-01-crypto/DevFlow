@@ -9,11 +9,22 @@ const TaskCard = ({
   priority,
   dueDate,
   onEdit,
-  onDelete ,
+  onDelete,
+  onComplete,
 }) => {
   const [taskEditModal, settaskEditModal] = useState(false);
   return (
-    <div className=" mb-3 group rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-violet-400/30 hover:bg-white/[0.07] ">
+    <div className="  mb-3 group
+    rounded-2xl
+    border border-white/10
+    bg-[#171b2e]
+    p-5
+    shadow-[0_0_25px_rgba(139,92,246,0.06)]
+    transition-all duration-300
+    hover:-translate-y-1
+    hover:border-violet-400/30
+    hover:bg-[#1a1f35]
+    hover:shadow-[0_0_30px_rgba(139,92,246,0.12)] ">
       {/* Top section */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
@@ -35,9 +46,9 @@ const TaskCard = ({
       shadow-[0_0_12px_rgba(139,92,246,0.15)]
       transition-all duration-200
       hover:border-violet-400/60
-      hover:bg-violet-500/20
+      hover:bg-violet-600/20
       hover:text-violet-200
-      hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]
+      hover:shadow-[0_0_30px_rgba(139,92,246,0.35)]
       active:scale-95
     "
           >
@@ -57,9 +68,9 @@ const TaskCard = ({
       shadow-[0_0_12px_rgba(248,113,113,0.12)]
       transition-all duration-200
       hover:border-red-400/60
-      hover:bg-red-500/20
+      hover:bg-red-600/20
       hover:text-red-200
-      hover:shadow-[0_0_18px_rgba(248,113,113,0.30)]
+      hover:shadow-[0_0_30px_rgba(248,113,113,0.30)]
       active:scale-95
     "
           >
@@ -90,7 +101,25 @@ const TaskCard = ({
           <p className="mt-1 text-sm font-medium text-slate-300">{dueDate}</p>
         </div>
 
-        <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition hover:border-violet-400/30 hover:bg-violet-500/10 hover:text-violet-300">
+        <button
+          onClick={() => {
+            onComplete(id);
+          }}
+          className="
+    flex h-9 w-9 items-center justify-center
+    rounded-xl
+    border border-violet-400/30
+    bg-violet-500/10
+    text-violet-300
+    shadow-[0_0_12px_rgba(139,92,246,0.15)]
+    transition-all duration-200
+    hover:border-violet-400/60
+    hover:bg-violet-500/20
+    hover:text-violet-200
+    hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]
+    active:scale-95
+  "
+        >
           ✓
         </button>
       </div>

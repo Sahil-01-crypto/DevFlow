@@ -1,4 +1,4 @@
-const ProjectProgress = ({ progress }) => {
+const ProjectProgress = ({ progress , completed , inProgress , pending ,  }) => {
   return (
     <div
       className="
@@ -46,17 +46,17 @@ const ProjectProgress = ({ progress }) => {
 
         <div className="flex justify-between">
           <span className="text-slate-300">Completed</span>
-          <span className="font-semibold">128</span>
+          <span className="font-semibold">{completed}</span>
         </div>
 
         <div className="flex justify-between">
           <span className="text-slate-300">In Progress</span>
-          <span className="font-semibold">32</span>
+          <span className="font-semibold">{inProgress}</span>
         </div>
 
         <div className="flex justify-between">
           <span className="text-slate-300">Pending</span>
-          <span className="font-semibold">48</span>
+          <span className="font-semibold">{pending}</span>
         </div>
 
       </div>

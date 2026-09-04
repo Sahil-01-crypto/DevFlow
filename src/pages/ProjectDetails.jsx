@@ -5,51 +5,14 @@ import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 
 import TaskCard from "../components/TaskCard";
-const ProjectDetails = ({ projects }) => {
+const ProjectDetails = ({ projects  , projectTasks, setProjectTasks, }) => {
   const params = useParams();
   const id = params.id;
 
   const project = projects.find((currproject) => {
     return currproject.id === Number(id);
   });
-  const [projectTasks, setProjectTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("projectTasks");
-
-    if (savedTasks) {
-      return JSON.parse(savedTasks);
-    }
-
-    return [
-      // your initial tasks
-      {
-        id: 1,
-        projectId: 1,
-        title: "Build authentication",
-        description: "Implement login and registration ",
-        status: "In Progress",
-        priority: "High",
-        dueDate: "2026-09-05",
-      },
-      {
-        id: 2,
-        projectId: 1,
-        title: "Create dashboard",
-        description: "Build the main dashboard UI",
-        status: "Completed",
-        priority: "Medium",
-        dueDate: "2026-09-02",
-      },
-      {
-        id: 3,
-        projectId: 2,
-        title: "Design portfolio",
-        description: "Create portfolio layout",
-        status: "Not Started",
-        priority: "Low",
-        dueDate: "2026-09-10",
-      },
-    ];
-  });
+  
 
   useEffect(() => {
     localStorage.setItem("projectTasks", JSON.stringify(projectTasks));
@@ -161,6 +124,18 @@ const finalDeleteTask =()=>{
 }
                       
   
+const markAsComplete = (taskId) => {
+  setProjectTasks((prevTasks) =>
+    prevTasks.map((task) =>
+      task.id === taskId
+        ? {
+            ...task,
+            status: "Completed",
+          }
+        : task
+    )
+  );
+};
 
 
   return (
@@ -387,6 +362,7 @@ const finalDeleteTask =()=>{
                       dueDate={obj.dueDate}
                       onEdit={handleTaskEdit}
                       onDelete={handleDeleteTask}
+                      onComplete={markAsComplete}
                     />
                   ))}
                 </>
@@ -1028,6 +1004,7 @@ const finalDeleteTask =()=>{
     
     </div>
   );
-};
+}
+;
 
 export default ProjectDetails;
