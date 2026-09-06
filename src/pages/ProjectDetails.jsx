@@ -45,13 +45,15 @@ const ProjectDetails = ({
 
     setProjectTasks((prevTasks) => [...prevTasks, newTask]);
 
-    setActivities((prev) => [
-      {
-        title: `New task ${taskTitle} created`,
-        time: "Just now",
-      },
-      ...prev,
-    ]);
+    setActivities((prev) =>
+      [
+        {
+          title: `New task ${taskTitle} created`,
+          time: "Just now",
+        },
+        ...prev,
+      ].slice(0, 4),
+    );
 
     setTaskTitle("");
     setTaskDescription("");
@@ -111,11 +113,11 @@ const ProjectDetails = ({
       setActivities((prev) => {
         return [
           {
-            title: `You edited "${editedTaskTitle}"`,
+            title: `You edited ${editedTaskTitle}`,
             time: "Just now",
           },
           ...prev,
-        ];
+        ].slice(0, 4);
       }),
     );
 
@@ -139,7 +141,7 @@ const ProjectDetails = ({
     console.log(deleteItemName);
     setActivities((prev) => [
       {
-        title: `You deleted "${deleteItemName.title}"`,
+        title: `You deleted ${deleteItemName.title}`,
         time: "Just now",
       },
       ...prev,
@@ -159,18 +161,44 @@ const ProjectDetails = ({
       ),
     );
 
-    const completedTask = projectTasks.find((task)=>{
+    const completedTask = projectTasks.find((task) => {
       return task.id === taskId;
-    })
-    setActivities((prev) => [
-      {
-        title: `You completed "${completedTask.title}"`,
-        time: "Just now",
-      },
-      ...prev,
-    ]);
+    });
+    setActivities((prev) =>
+      [
+        {
+          title: `You completed ${completedTask.title}`,
+          time: "Just now",
+        },
+        ...prev,
+      ].slice(0, 4),
+    );
   };
 
+  // project detail page status ( including  total task  progress  not started )
+  const totalTask = projectTasks.filter((tasks) => {
+    return tasks.projectId === Number(id);
+  }).length;
+
+  const completedTask = projectTasks.filter((tasks) => {
+    return tasks.projectId === Number(id) && tasks.status === "Completed";
+  }).length;
+
+  const projectProgress =
+    totalTask === 0 ? 0 : Math.round((completedTask / totalTask) * 100);
+  console.log(projectProgress);
+
+  const inProgress = projectTasks.some((task) => {
+    return task.projectId === Number(id) && task.status === "In Progress";
+  });
+
+  let statusChecker = "Not Started";
+
+  if (totalTask > 0 && completedTask === totalTask) {
+    statusChecker = "Completed";
+  } else if (completedTask > 0 || inProgress) {
+    statusChecker = "In Progress";
+  }
   return (
     <div>
       return (
@@ -242,7 +270,7 @@ const ProjectDetails = ({
                     <span className="text-sm text-slate-400">Progress</span>
 
                     <span className="text-sm font-semibold text-white">
-                      {project.progress}%
+                      {projectProgress}%
                     </span>
                   </div>
 
@@ -254,7 +282,7 @@ const ProjectDetails = ({
                     bg-violet-500
                     transition-all
                   "
-                      style={{ width: `${project.progress}%` }}
+                      style={{ width: `${projectProgress}%` }}
                     />
                   </div>
                 </div>
@@ -275,7 +303,7 @@ const ProjectDetails = ({
               >
                 <p className="text-sm text-slate-500">Total Tasks</p>
 
-                <p className="mt-2 text-3xl font-bold">{project.tasks}</p>
+                <p className="mt-2 text-3xl font-bold">{totalTask}</p>
               </div>
 
               {/* Progress */}
@@ -290,7 +318,7 @@ const ProjectDetails = ({
               >
                 <p className="text-sm text-slate-500">Progress</p>
 
-                <p className="mt-2 text-3xl font-bold">{project.progress}%</p>
+                <p className="mt-2 text-3xl font-bold">{projectProgress}%</p>
               </div>
 
               {/* Status */}
@@ -305,7 +333,7 @@ const ProjectDetails = ({
               >
                 <p className="text-sm text-slate-500">Status</p>
 
-                <p className="mt-2 text-xl font-semibold">{project.status}</p>
+                <p className="mt-2 text-xl font-semibold">{statusChecker}</p>
               </div>
             </div>
 

@@ -4,7 +4,14 @@ import Sidebar from "../components/Slidebar";
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
 
-const Projects = ({ projects, setProjects }) => {
+const Projects = ({
+  projects,
+  setProjects,
+  activities,
+  setActivities,
+  projectTasks,
+  setProjectTasks,
+}) => {
   const [showModal, setShowModal] = useState(false);
 
   const [search, setSearch] = useState("");
@@ -44,6 +51,16 @@ const Projects = ({ projects, setProjects }) => {
     };
 
     setProjects([...projects, newProject]);
+
+    setActivities((prev) =>
+      [
+        {
+          title: `New project  ${projectName} created`,
+          time: "Just now",
+        },
+        ...prev,
+      ].slice(0, 4),
+    );
 
     setProjectName("");
     setDescription("");
@@ -178,19 +195,47 @@ const Projects = ({ projects, setProjects }) => {
                 </p>
               </div>
             ) : (
-              statusResult.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  id={project.id}
-                  title={project.title}
-                  description={project.description}
-                  progress={project.progress}
-                  tasks={project.tasks}
-                  status={project.status}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))
+              statusResult.map((project) => {
+                const projectTask = projectTasks.filter((task) => {
+                  return task.projectId === project.id;
+                });
+
+                const totalTask = projectTask.length;
+
+                const completedTask = projectTask.filter((task) => {
+                  return task.status === "Completed";
+                }).length;
+
+                const inProgress = projectTask.filter((task) => {
+                  return task.status === "In Progress";
+                }).length;
+
+                let statusChecker = "Not Started";
+
+                if (totalTask > 0 && completedTask === totalTask) {
+                  statusChecker = "Completed";
+                } else if (completedTask > 0 || inProgress > 0) {
+                  statusChecker = "In Progress";
+                }
+
+                return (
+                  <ProjectCard
+                    key={project.id}
+                    id={project.id}
+                    title={project.title}
+                    description={project.description}
+                    progress={
+                      totalTask === 0
+                        ? 0
+                        : Math.round((completedTask / totalTask) * 100)
+                    }
+                    tasks={totalTask}
+                    status={statusChecker}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                );
+              })
             )}
           </div>
         </main>

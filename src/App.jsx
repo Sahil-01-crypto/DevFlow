@@ -9,58 +9,38 @@ import ProjectDetails from "./pages/ProjectDetails";
 import { useState, useEffect } from "react";
 
 const App = () => {
-  const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "DevFlow",
-      description: "Developer productivity platform",
-      progress: 80,
-      tasks: 12,
-      status: "In Progress",
-    },
-    {
-      id: 2,
-      title: "Portfolio",
-      description: "Personal developer portfolio",
-      progress: 60,
-      tasks: 18,
-      status: "Completed",
-    },
-    {
-      id: 3,
-      title: "E-Commerce",
-      description: "Modern shopping platform",
-      progress: 35,
-      tasks: 24,
-      status: "Not Started",
-    },
-    {
-      id: 4,
-      title: "DevFlow",
-      description: "Developer productivity platform",
-      progress: 80,
-      tasks: 12,
-      status: "On Hold",
-    },
-    {
-      id: 5,
-      title: "Portfolio",
-      description: "Personal developer portfolio",
-      progress: 60,
-      tasks: 18,
-      status: "In Progress",
-    },
-    {
-      id: 6,
-      title: "E-Commerce",
-      description: "Modern shopping platform",
-      progress: 35,
-      tasks: 24,
-      status: "Completed",
-    },
-  ]);
+  const [projects, setProjects] = useState(()=>{
+    const savedProject = localStorage.getItem("projects")
 
-  const [activities, setActivities] = useState([]);
+    if(savedProject){
+      return JSON.parse(savedProject)
+    }
+
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("projects" ,JSON.stringify(projects))
+  }, [projects])
+  
+
+  const [activities, setActivities] = useState(()=>{
+    const savedActivities = localStorage.getItem("recentActivities");
+
+    if(savedActivities){
+      return JSON . parse(savedActivities);
+    }
+    return [];
+  }
+    
+  );
+
+  useEffect(() => {
+    localStorage.setItem("recentActivities" , JSON.stringify(activities));
+  
+    
+  }, [activities])
+  
 
   const [projectTasks, setProjectTasks] = useState(() => {
     const savedTasks = localStorage.getItem("projectTasks");
@@ -94,7 +74,12 @@ const App = () => {
         <Route path="/kanban" element={<Kanban />} />
         <Route
           path="/projects"
-          element={<Projects projects={projects} setProjects={setProjects} />}
+          element={<Projects projects={projects} 
+          setProjects={setProjects} 
+          activities={activities} 
+          setActivities={setActivities} 
+          projectTasks ={projectTasks}
+          setProjectTasks ={setProjectTasks} />}
         />
 
         <Route
