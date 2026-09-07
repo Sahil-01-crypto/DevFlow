@@ -34,9 +34,17 @@ const Projects = ({
     );
   };
 
-  const handleDelete = (id) => {
-    setProjects(projects.filter((project) => project.id !== id));
-  };
+ const handleDelete = (id) => {
+
+  setProjectTasks(
+    projectTasks.filter((task) => task.projectId !== id)
+  );
+
+  setProjects(
+    projects.filter((project) => project.id !== id)
+  );
+
+};
 
   const handleCreateProject = (e) => {
     e.preventDefault();

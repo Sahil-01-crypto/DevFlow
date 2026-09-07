@@ -11,6 +11,7 @@ const ProjectDetails = ({
   setProjectTasks,
   activities,
   setActivities,
+  
 }) => {
   const params = useParams();
   const id = params.id;
@@ -126,9 +127,45 @@ const ProjectDetails = ({
   };
 
   const handleDeleteTask = (taskId) => {
+    console.log("Deleting task:", taskId);
+    console.log("Type:", typeof taskId);
+
     setDeleteTaskModal(true);
     setDeleteTaskId(taskId);
   };
+  
+
+
+
+
+
+    // project detail page status ( including  total task  progress  not started )
+  const totalTask = projectTasks.filter((tasks) => {
+    return tasks.projectId === Number(id);
+  }).length;
+
+  const completedTask = projectTasks.filter((tasks) => {
+    return tasks.projectId === Number(id) && tasks.status === "Completed";
+  }).length;
+
+  const projectProgress =
+    totalTask === 0 ? 0 : Math.round((completedTask / totalTask) * 100);
+  console.log(projectProgress);
+
+  const inProgress = projectTasks.some((task) => {
+    return task.projectId === Number(id) && task.status === "In Progress";
+  });
+
+  let statusChecker = "Not Started";
+
+  if (totalTask > 0 && completedTask === totalTask) {
+    statusChecker = "Completed";
+  } else if (completedTask > 0 || inProgress) {
+    statusChecker = "In Progress";
+  }
+
+
+
 
   // this function will run the submission of the command from the delete task modal
   const finalDeleteTask = () => {
@@ -175,30 +212,7 @@ const ProjectDetails = ({
     );
   };
 
-  // project detail page status ( including  total task  progress  not started )
-  const totalTask = projectTasks.filter((tasks) => {
-    return tasks.projectId === Number(id);
-  }).length;
 
-  const completedTask = projectTasks.filter((tasks) => {
-    return tasks.projectId === Number(id) && tasks.status === "Completed";
-  }).length;
-
-  const projectProgress =
-    totalTask === 0 ? 0 : Math.round((completedTask / totalTask) * 100);
-  console.log(projectProgress);
-
-  const inProgress = projectTasks.some((task) => {
-    return task.projectId === Number(id) && task.status === "In Progress";
-  });
-
-  let statusChecker = "Not Started";
-
-  if (totalTask > 0 && completedTask === totalTask) {
-    statusChecker = "Completed";
-  } else if (completedTask > 0 || inProgress) {
-    statusChecker = "In Progress";
-  }
   return (
     <div>
       return (

@@ -9,38 +9,32 @@ import ProjectDetails from "./pages/ProjectDetails";
 import { useState, useEffect } from "react";
 
 const App = () => {
-  const [projects, setProjects] = useState(()=>{
-    const savedProject = localStorage.getItem("projects")
+  const [projects, setProjects] = useState(() => {
+    const savedProject = localStorage.getItem("projects");
 
-    if(savedProject){
-      return JSON.parse(savedProject)
+    if (savedProject) {
+      return JSON.parse(savedProject);
     }
 
     return [];
   });
 
   useEffect(() => {
-    localStorage.setItem("projects" ,JSON.stringify(projects))
-  }, [projects])
-  
+    localStorage.setItem("projects", JSON.stringify(projects));
+  }, [projects]);
 
-  const [activities, setActivities] = useState(()=>{
+  const [activities, setActivities] = useState(() => {
     const savedActivities = localStorage.getItem("recentActivities");
 
-    if(savedActivities){
-      return JSON . parse(savedActivities);
+    if (savedActivities) {
+      return JSON.parse(savedActivities);
     }
     return [];
-  }
-    
-  );
+  });
 
   useEffect(() => {
-    localStorage.setItem("recentActivities" , JSON.stringify(activities));
-  
-    
-  }, [activities])
-  
+    localStorage.setItem("recentActivities", JSON.stringify(activities));
+  }, [activities]);
 
   const [projectTasks, setProjectTasks] = useState(() => {
     const savedTasks = localStorage.getItem("projectTasks");
@@ -51,10 +45,10 @@ const App = () => {
 
     return [];
   });
-  
 
-  
   useEffect(() => {
+    console.log("Saving tasks:", projectTasks);
+
     localStorage.setItem("projectTasks", JSON.stringify(projectTasks));
   }, [projectTasks]);
 
@@ -71,15 +65,19 @@ const App = () => {
             />
           }
         />
-        <Route path="/kanban" element={<Kanban />} />
+
         <Route
           path="/projects"
-          element={<Projects projects={projects} 
-          setProjects={setProjects} 
-          activities={activities} 
-          setActivities={setActivities} 
-          projectTasks ={projectTasks}
-          setProjectTasks ={setProjectTasks} />}
+          element={
+            <Projects
+              projects={projects}
+              setProjects={setProjects}
+              activities={activities}
+              setActivities={setActivities}
+              projectTasks={projectTasks}
+              setProjectTasks={setProjectTasks}
+            />
+          }
         />
 
         <Route
@@ -91,6 +89,17 @@ const App = () => {
               setProjectTasks={setProjectTasks}
               activities={activities}
               setActivities={setActivities}
+            />
+          }
+        />
+
+        <Route
+          path="/kanban"
+          element={
+            <Kanban
+            projects ={projects}
+              projectTasks={projectTasks}
+              setProjectTasks={setProjectTasks}
             />
           }
         />

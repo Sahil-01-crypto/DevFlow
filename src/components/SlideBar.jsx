@@ -59,7 +59,7 @@ const SlideBar = () => {
         >
           <ListTodo size={19} />
           <Link to="/Kanban" className="text-sm font-medium ">
-            Tasks
+            Kanban
           </Link>
         </div>
 
