@@ -5,8 +5,11 @@ import Kanban from "./pages/Kanban";
 import Projects from "./pages/Projects";
 import Settings from "./pages/Settings";
 import ProjectDetails from "./pages/ProjectDetails";
-
+import Login from "./pages/login";
 import { useState, useEffect } from "react";
+
+import getCurrentUser from "./services/auth.api";
+import getProjects from "./services/project.api";
 
 const App = () => {
   const [projects, setProjects] = useState(() => {
@@ -18,6 +21,34 @@ const App = () => {
 
     return [];
   });
+
+
+  // BACKEND API CALL TO  VALIDATE USER 
+
+  useEffect(()=>{
+    const checkUser = async()=>{
+      const user = await getCurrentUser();
+
+      console.log("Current User:", user);
+
+     
+  }
+  checkUser();
+  
+},[])
+
+// BACKEND API CALL TO GET PROJECTS
+
+useEffect(() => {
+  const fetchProjects = async()=>{
+    const response =  await getProjects();
+
+    console.log("Projects:", response);
+    
+  }
+  fetchProjects();
+
+},[]);
 
   useEffect(() => {
     localStorage.setItem("projects", JSON.stringify(projects));
@@ -55,6 +86,7 @@ const App = () => {
   return (
     <div className=" w-full h-screen bg-gray-950 scroll-smooth">
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={

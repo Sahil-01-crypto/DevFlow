@@ -69,4 +69,81 @@ async function getProjectById(req, res) {
   }
 }
 
-module.exports = { createProject, getAllProjects, getProjectById };
+async function updateProject(req, res) {
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    const owner = req.user.id;
+
+    if (!title || !description) {
+      return res.status(400).json({
+        message:
+          "At least one of title or description must be provided for update",
+      });
+    }
+
+    const updatedProject = await projectModel.findOneAndUpdate(
+      {
+        _id: id,
+        owner,
+      },
+      {
+        title,
+        description,
+      },
+      {
+        new: true,
+      },
+    );
+    if (!updatedProject) {
+      return res.status(404).json({
+        message: "Project not found or you do not have permission to update it",
+      });
+    }
+
+    res.status(200).json({
+      message: "project updated successfully",
+      project: updatedProject,
+    });
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return res.status(500).json({
+      message: "Error updating project",
+      error: error.message,
+    });
+  }
+}
+
+async function deleteProject(req, res) {
+  const { id } = req.params;
+
+  const owner = req.user.id;
+
+  try {
+    const deletedProject = await projectModel.findOneAndDelete({
+      _id: id,
+      owner,
+    });
+
+    if (!deletedProject) {
+      return res.status(404).json({ message: "Project not found " });
+    }
+
+    res
+      .status(200)
+      .json({ message: "project deleted successfully", project: deletedProject });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    return res
+      .status(500)
+      .json({ message: "Error deleting project", error: error.message });
+  }
+}
+
+module.exports = {
+  createProject,
+  getAllProjects,
+  getProjectById,
+  updateProject,
+  deleteProject,
+};

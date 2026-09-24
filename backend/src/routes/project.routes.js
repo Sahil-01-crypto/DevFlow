@@ -11,4 +11,7 @@ router.get('/',authMiddleware.authUser, projectController.getAllProjects);
 
 router.get('/:id',authMiddleware.authUser, projectController.getProjectById);
 
+
+router.put('/:id',authMiddleware.authUser, projectController.updateProject);
+
 module.exports = router;
