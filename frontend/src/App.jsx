@@ -9,8 +9,9 @@ import Login from "./pages/login";
 import { useState, useEffect } from "react";
 
 import getCurrentUser from "./services/auth.api";
-import getProjects from "./services/project.api";
+import projectsApi from "./services/project.api";
 
+import tasksApi from "./services/task.api";
 const App = () => {
   const [projects, setProjects] = useState(() => {
     const savedProject = localStorage.getItem("projects");
@@ -40,15 +41,28 @@ const App = () => {
 // BACKEND API CALL TO GET PROJECTS
 
 useEffect(() => {
-  const fetchProjects = async()=>{
-    const response =  await getProjects();
-
-    console.log("Projects:", response);
+    const fetchProjects = async () => {
+        const response = await projectsApi.getProjects();
+        
+        setProjects(response);
+    };
     
-  }
-  fetchProjects();
 
-},[]);
+    fetchProjects();
+}, []);
+
+// BACKEND API CALL TO GET TASKS
+
+useEffect(() => {
+  const fetchTask = async () => {
+    const response = await tasksApi.getTasks();
+
+    console.log("Fetched Tasks:", response);
+    setProjectTasks(response);
+  };
+
+  fetchTask();
+}, []);
 
   useEffect(() => {
     localStorage.setItem("projects", JSON.stringify(projects));

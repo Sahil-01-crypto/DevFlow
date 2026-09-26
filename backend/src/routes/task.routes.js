@@ -15,6 +15,11 @@ router.get('/:id' , authMiddleware.authUser ,taskController.getTaskById);
 
 router.put('/:id' , authMiddleware.authUser ,taskController.updateTask);
 
+router.delete('/:id' , authMiddleware.authUser ,taskController.deleteTask);
+
+
+
+
 
 
 

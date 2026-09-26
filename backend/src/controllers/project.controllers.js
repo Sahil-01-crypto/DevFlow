@@ -115,29 +115,39 @@ async function updateProject(req, res) {
 }
 
 async function deleteProject(req, res) {
-  const { id } = req.params;
+    const { id } = req.params;
+    const owner = req.user.id;
 
-  const owner = req.user.id;
+    console.log("DELETE ID:", id);
+    console.log("DELETE OWNER:", owner);
 
-  try {
-    const deletedProject = await projectModel.findOneAndDelete({
-      _id: id,
-      owner,
-    });
+    try {
+        const deletedProject = await projectModel.findOneAndDelete({
+            _id: id,
+            owner,
+        });
 
-    if (!deletedProject) {
-      return res.status(404).json({ message: "Project not found " });
+        console.log("DELETED PROJECT:", deletedProject);
+
+        if (!deletedProject) {
+            return res.status(404).json({
+                message: "Project not found"
+            });
+        }
+
+        return res.status(200).json({
+            message: "project deleted successfully",
+            project: deletedProject
+        });
+
+    } catch (error) {
+        console.error("Error deleting project:", error);
+
+        return res.status(500).json({
+            message: "Error deleting project",
+            error: error.message
+        });
     }
-
-    res
-      .status(200)
-      .json({ message: "project deleted successfully", project: deletedProject });
-  } catch (error) {
-    console.error("Error deleting project:", error);
-    return res
-      .status(500)
-      .json({ message: "Error deleting project", error: error.message });
-  }
 }
 
 module.exports = {

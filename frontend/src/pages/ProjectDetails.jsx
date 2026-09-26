@@ -5,6 +5,9 @@ import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 
 import TaskCard from "../components/TaskCard";
+
+
+import tasksApi from "../services/task.api";
 const ProjectDetails = ({
   projects,
   projectTasks,
@@ -16,35 +19,39 @@ const ProjectDetails = ({
   const params = useParams();
   const id = params.id;
 
-  const project = projects.find((currproject) => {
-    return currproject.id === Number(id);
-  });
+const project = projects.find((currproject) => {
+    return currproject.id === id;
+});
 
   const [showAddTaskModel, setShowAddTaskModel] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
-  const [status, setStatus] = useState("");
-  const [priority, setPriority] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [taskStatus, setTaskStatus] = useState("");
+  const [taskPriority, setTaskPriority] = useState("");
+  const [taskDueDate, setTaskDueDate] = useState("");
 
   const filteredTask = projectTasks.filter((tasksss) => {
-    return tasksss.projectId === Number(id);
+    return tasksss.projectId === id;
   });
 
-  const handleCreateTask = (e) => {
+  const handleCreateTask = async (e) => {
     e.preventDefault();
 
-    const newTask = {
-      id: Date.now(),
-      projectId: Number(id),
-      title: taskTitle,
-      description: taskDescription,
-      status: status,
-      priority: priority,
-      dueDate: dueDate,
-    };
+const newTask = await tasksApi.createTask({
+  title: taskTitle,
+  description: taskDescription,
+  status: taskStatus,
+  priority: taskPriority,
+  dueDate: taskDueDate,
+  projectId: id,
+});
 
-    setProjectTasks((prevTasks) => [...prevTasks, newTask]);
+const formatedTask = {
+  ...newTask,
+  id: newTask._id,
+};
+
+setProjectTasks((prev) => [...prev, formatedTask]);
 
     setActivities((prev) =>
       [
@@ -58,9 +65,9 @@ const ProjectDetails = ({
 
     setTaskTitle("");
     setTaskDescription("");
-    setStatus("");
-    setPriority("");
-    setDueDate("");
+    setTaskStatus("");
+    setTaskPriority("");
+    setTaskDueDate("");
     setShowAddTaskModel(false);
   };
 
@@ -93,34 +100,36 @@ const ProjectDetails = ({
 
     settaskEditModal(true);
   };
-  const eupdateEditedTask = (e) => {
+const eupdateEditedTask = async (e) => {
     e.preventDefault();
 
+    const updatedTask = await tasksApi.editTask(
+        editingTaskId,
+        {
+            title: editedTaskTitle,
+            description: editedTaskDescription,
+            status: editedTaskStatus,
+            priority: editedTaskPriority,
+            dueDate: editedTaskDueDate,
+        }
+    );
     setProjectTasks(
       (prevTasks) =>
         prevTasks.map((task) =>
           task.id === editingTaskId
             ? {
                 ...task,
-                title: editedTaskTitle,
-                description: editedTaskDescription,
-                status: editedTaskStatus,
-                priority: editedTaskPriority,
-                dueDate: editedTaskDueDate,
+                title: updatedTask.title,
+                description: updatedTask.description,
+                status: updatedTask.status,
+                priority: updatedTask.priority,
+                dueDate: updatedTask.dueDate,
               }
             : task,
         ),
-
-      setActivities((prev) => {
-        return [
-          {
-            title: `You edited ${editedTaskTitle}`,
-            time: "Just now",
-          },
-          ...prev,
-        ].slice(0, 4);
-      }),
     );
+
+  
 
     settaskEditModal(false);
     setEditingTaskId(null);
@@ -168,22 +177,12 @@ const ProjectDetails = ({
 
 
   // this function will run the submission of the command from the delete task modal
-  const finalDeleteTask = () => {
-    setProjectTasks((prevTasks) =>
-      prevTasks.filter((task) => task.id !== deleteTaskId),
-    );
-    const deleteItemName = projectTasks.find((task) => {
-      return task.id === deleteTaskId;
-    });
-    console.log(deleteItemName);
-    setActivities((prev) => [
-      {
-        title: `You deleted ${deleteItemName.title}`,
-        time: "Just now",
-      },
-      ...prev,
-    ]);
-    setDeleteTaskId(null);
+  const finalDeleteTask = async () => {
+    const deleteItem = await tasksApi.deleteTask(deleteTaskId);
+
+    setProjectTasks((prevTasks) => prevTasks.filter((task)=>task.id !== deleteTaskId));
+    
+    
   };
 
   const markAsComplete = (taskId) => {
@@ -572,8 +571,8 @@ const ProjectDetails = ({
 
                     <select
                       required
-                      value={editedTaskStatus}
-                      onChange={(e) => setEditedTaskStatus(e.target.value)}
+                      value={taskStatus}
+                      onChange={(e) => setTaskStatus(e.target.value)}
                       className="
                 w-full
                 rounded-xl
@@ -588,15 +587,15 @@ const ProjectDetails = ({
                 focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
               "
                     >
-                      <option value="Not Started" className="bg-slate-900">
+                      <option value="todo" className="bg-slate-900">
                         Not Started
                       </option>
 
-                      <option value="In Progress" className="bg-slate-900">
+                      <option value="in-progress" className="bg-slate-900">
                         In Progress
                       </option>
 
-                      <option value="Completed" className="bg-slate-900">
+                      <option value="completed" className="bg-slate-900">
                         Completed
                       </option>
                     </select>
@@ -610,8 +609,8 @@ const ProjectDetails = ({
 
                     <select
                       required
-                      value={editedTaskPriority}
-                      onChange={(e) => setEditedTaskPriority(e.target.value)}
+                      value={taskPriority}
+                      onChange={(e) => setTaskPriority(e.target.value)}
                       className="
                 w-full
                 rounded-xl
@@ -626,15 +625,15 @@ const ProjectDetails = ({
                 focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
               "
                     >
-                      <option value="Low" className="bg-slate-900">
+                      <option value="low" className="bg-slate-900">
                         Low
                       </option>
 
-                      <option value="Medium" className="bg-slate-900">
+                      <option value="medium" className="bg-slate-900">
                         Medium
                       </option>
 
-                      <option value="High" className="bg-slate-900">
+                      <option value="high" className="bg-slate-900">
                         High
                       </option>
                     </select>
@@ -650,8 +649,8 @@ const ProjectDetails = ({
                   <input
                     required
                     type="date"
-                    value={editedTaskDueDate}
-                    onChange={(e) => setEditedTaskDueDate(e.target.value)}
+                    value={taskDueDate}
+                    onChange={(e) => setTaskDueDate(e.target.value)}
                     className="
               w-full
               rounded-xl
@@ -854,15 +853,15 @@ const ProjectDetails = ({
                 focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
               "
                   >
-                    <option value="Not Started" className="bg-slate-900">
+                    <option value="todo" className="bg-slate-900">
                       Not Started
                     </option>
 
-                    <option value="In Progress" className="bg-slate-900">
+                    <option value="in-progress" className="bg-slate-900">
                       In Progress
                     </option>
 
-                    <option value="Completed" className="bg-slate-900">
+                    <option value="completed" className="bg-slate-900">
                       Completed
                     </option>
                   </select>
@@ -891,15 +890,15 @@ const ProjectDetails = ({
                 focus:shadow-[0_0_20px_rgba(139,92,246,0.12)]
               "
                   >
-                    <option value="Low" className="bg-slate-900">
+                    <option value="low" className="bg-slate-900">
                       Low
                     </option>
 
-                    <option value="Medium" className="bg-slate-900">
+                    <option value="medium" className="bg-slate-900">
                       Medium
                     </option>
 
-                    <option value="High" className="bg-slate-900">
+                    <option value="high" className="bg-slate-900">
                       High
                     </option>
                   </select>

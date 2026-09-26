@@ -14,4 +14,6 @@ router.get('/:id',authMiddleware.authUser, projectController.getProjectById);
 
 router.put('/:id',authMiddleware.authUser, projectController.updateProject);
 
+router.delete('/:id', authMiddleware.authUser, projectController.deleteProject);
+
 module.exports = router;

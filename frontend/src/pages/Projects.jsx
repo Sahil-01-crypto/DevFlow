@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Sidebar from "../components/Slidebar";
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
+
+import projectsApi from "../services/project.api";
 
 const Projects = ({
   projects,
@@ -20,55 +22,45 @@ const Projects = ({
   const [projectName, setProjectName] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleEdit = ({ title, description, id }) => {
+  const handleEdit = async ({ title, description, id }) => {
+    const updatedProject = await projectsApi.editProject(id, {
+      title,
+      description,
+    });
+
+    const formattedProject = {
+      ...updatedProject,
+      id: updatedProject._id,
+    };
+
     setProjects(
       projects.map((project) =>
-        project.id === id
-          ? {
-              ...project,
-              title: title,
-              description: description,
-            }
-          : project,
+        project.id === id ? formattedProject : project,
       ),
     );
   };
+  const handleDelete = async (id) => {
+    await projectsApi.deleteProject(id);
 
- const handleDelete = (id) => {
+    setProjects(projects.filter((project) => project.id !== id));
 
-  setProjectTasks(
-    projectTasks.filter((task) => task.projectId !== id)
-  );
+    setProjectTasks(projectTasks.filter((task) => task.projectId !== id));
+  };
 
-  setProjects(
-    projects.filter((project) => project.id !== id)
-  );
-
-};
-
-  const handleCreateProject = (e) => {
+  const handleCreateProject = async (e) => {
     e.preventDefault();
 
-    const newProject = {
-      id: Date.now(),
+    const newProject = await projectsApi.createProject({
       title: projectName,
       description: description,
-      progress: 0,
-      tasks: 0,
-      status: "Not Started",
+    });
+
+    const formattedProject = {
+      ...newProject,
+      id: newProject._id,
     };
 
-    setProjects([...projects, newProject]);
-
-    setActivities((prev) =>
-      [
-        {
-          title: `New project  ${projectName} created`,
-          time: "Just now",
-        },
-        ...prev,
-      ].slice(0, 4),
-    );
+    setProjects([...projects, formattedProject]);
 
     setProjectName("");
     setDescription("");

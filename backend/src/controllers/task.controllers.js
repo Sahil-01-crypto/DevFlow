@@ -135,6 +135,7 @@ const updateTask = async (req, res) => {
 
         const owner = req.user.id;
 
+
         const updatedTask = await taskModel.findOneAndUpdate(
             {
                 _id: id,
@@ -178,6 +179,8 @@ const deleteTask = async (req, res) => {
     try {
         const { id } = req.params;
         const owner = req.user.id;
+                console.log("Delete Task ID:", id);
+console.log("Delete Task Owner:", owner);
 
         const deletedTask = await taskModel.findOneAndDelete({
             _id: id,
@@ -211,5 +214,5 @@ module.exports = {
     allTask , 
     getTaskById , 
     updateTask ,
-    deleteTask
+     deleteTask 
 };
